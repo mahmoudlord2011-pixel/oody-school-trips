@@ -7,6 +7,40 @@ from supabase import create_client, Client
 st.set_page_config(page_title="رحلات برايت فيجن - School Trips", page_icon="🚌", layout="wide")
 
 # ---------------------------------------------------------
+# 🌍 إعدادات اللغة (عربي / إنجليزي)
+# ---------------------------------------------------------
+st.sidebar.write("---")
+st.sidebar.subheader("🌍 Language / اللغة")
+lang_choice = st.sidebar.selectbox("اختر اللغة / Select Language:", ["العربية 🇸🇦", "English 🇺🇸"])
+
+if lang_choice == "English 🇺🇸":
+    TXT_LOGIN_TITLE = "🚌 Bright Vision Trips Platform - Login"
+    TXT_USER = "Username:"
+    TXT_PASS = "Password:"
+    TXT_LOGIN_BTN = "🔑 Login 🚀"
+    TXT_DEMO_BTN = "🚀 Guest Demo Login"
+    TXT_LOGOUT = "Logout 🚪"
+    TXT_CLEAR_CACHE = "🗑️ Clear Cache & Reload"
+    TXT_PAGE1 = "🏠 School Trips & Suggest"
+    TXT_PAGE2 = "🔔 Track Trip Suggestion"
+    TXT_PAGE3 = "🏆 Approved Trips History"
+    TXT_PAGE4 = "👨‍💼 Admin Dashboard"
+    TXT_PAGE_MASTER = "⚡ Kill Switch Control Panel"
+else:
+    TXT_LOGIN_TITLE = "🚌 تسجيل الدخول إلى منصة اقتراحات رحلات المدرسة"
+    TXT_USER = "اسم المستخدم (Username):"
+    TXT_PASS = "كلمة السر (Password):"
+    TXT_LOGIN_BTN = "تسجيل الدخول 🚀"
+    TXT_DEMO_BTN = "🚀 تسجيل الدخول إلى نظام الديمو التجريبي"
+    TXT_LOGOUT = "🚪 تسجيل الخروج"
+    TXT_CLEAR_CACHE = "🗑️ تفريغ كاش الجلسة (إعادة تحميل)"
+    TXT_PAGE1 = "🏠 رحلات المدرسة واقتراح رحلة"
+    TXT_PAGE2 = "🔔 متابعة اقتراح برقم الرحلة"
+    TXT_PAGE3 = "🏆 سجل الرحلات والفعاليات"
+    TXT_PAGE4 = "👨‍💼 لوحة تحكم المدير للرحلات (Dashboard)"
+    TXT_PAGE_MASTER = "⚡ Kill Switch Control Panel"
+
+# ---------------------------------------------------------
 # الاتصال بـ Supabase من خلال Secrets
 # ---------------------------------------------------------
 @st.cache_resource
@@ -154,16 +188,16 @@ if is_system_locked():
 # شاشة تسجيل الدخول
 # ---------------------------------------------------------
 if not st.session_state.logged_in:
-    st.markdown("<h2 style='text-align: center; color: #1E88E5;'>🚌 تسجيل الدخول إلى منصة اقتراحات رحلات المدرسة</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='text-align: center; color: #1E88E5;'>{TXT_LOGIN_TITLE}</h2>", unsafe_allow_html=True)
     st.write("---")
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        username = st.text_input("اسم المستخدم (Username):")
-        password = st.text_input("كلمة السر (Password):", type="password")
+        username = st.text_input(TXT_USER)
+        password = st.text_input(TXT_PASS, type="password")
         
-        login_btn = st.button("تسجيل الدخول 🚀", type="primary", use_container_width=True)
-        demo_btn = st.button("🚀 تسجيل الدخول إلى نظام الديمو التجريبي", use_container_width=True)
+        login_btn = st.button(TXT_LOGIN_BTN, type="primary", use_container_width=True)
+        demo_btn = st.button(TXT_DEMO_BTN, use_container_width=True)
 
         if login_btn:
             if username == "student" and password == "student123":
@@ -198,7 +232,7 @@ if not st.session_state.logged_in:
 st.sidebar.title(f"👤 {st.session_state.username}")
 st.sidebar.caption(f"الصلاحية: `{st.session_state.user_role.upper()}`")
 
-if st.sidebar.button("🚪 تسجيل الخروج", use_container_width=True):
+if st.sidebar.button(TXT_LOGOUT, use_container_width=True):
     st.session_state.logged_in = False
     st.session_state.user_role = None
     st.session_state.username = None
@@ -206,25 +240,25 @@ if st.sidebar.button("🚪 تسجيل الخروج", use_container_width=True):
 
 st.sidebar.write("---")
 
-if st.sidebar.button("🗑️ تفريغ كاش الجلسة (إعادة تحميل)", use_container_width=True):
+if st.sidebar.button(TXT_CLEAR_CACHE, use_container_width=True):
     st.cache_resource.clear()
     st.rerun()
 
 if st.session_state.user_role == "student":
-    available_pages = ["🏠 رحلات المدرسة واقتراح رحلة", "🔔 متابعة اقتراح برقم الرحلة", "🏆 سجل الرحلات والفعاليات"]
+    available_pages = [TXT_PAGE1, TXT_PAGE2, TXT_PAGE3]
 elif st.session_state.user_role == "admin":
-    available_pages = ["👨‍💼 لوحة تحكم المدير للرحلات (Dashboard)", "🏆 سجل الرحلات والفعاليات"]
+    available_pages = [TXT_PAGE4, TXT_PAGE3]
 elif st.session_state.user_role == "guest":
-    available_pages = ["🏠 رحلات المدرسة واقتراح رحلة", "🔔 متابعة اقتراح برقم الرحلة", "👨‍💼 لوحة تحكم المدير للرحلات (Dashboard)", "🏆 سجل الرحلات والفعاليات"]
+    available_pages = [TXT_PAGE1, TXT_PAGE2, TXT_PAGE4, TXT_PAGE3]
 elif st.session_state.user_role == "master":
-    available_pages = ["⚡ Kill Switch Control Panel"]
+    available_pages = [TXT_PAGE_MASTER]
 
-page = st.sidebar.radio("اختر الصفحة:", available_pages)
+page = st.sidebar.radio("اختر الصفحة / Select Page:", available_pages)
 
 # ---------------------------------------------------------
 # الصفحات
 # ---------------------------------------------------------
-if page == "🏠 رحلات المدرسة واقتراح رحلة":
+if page == TXT_PAGE1:
     st.markdown("<h1 style='text-align: center; color: #1E88E5;'>🚌 اقترح رحلة أحلامك لمدرسَتِك</h1>", unsafe_allow_html=True)
     st.write("---")
 
@@ -289,7 +323,7 @@ if page == "🏠 رحلات المدرسة واقتراح رحلة":
         else:
             st.info("لا توجد رحلات مقترحة معتمدة حالياً.")
 
-elif page == "🔔 متابعة اقتراح برقم الرحلة":
+elif page == TXT_PAGE2:
     st.title("🔔 متابعة حالة اقتراح الرحلة")
     search_id = st.text_input("أدخل رقم متابعة الرحلة (مثال: TRP-1001):")
 
@@ -322,7 +356,7 @@ elif page == "🔔 متابعة اقتراح برقم الرحلة":
         else:
             st.error("لا توجد مقترحات مسجلة حالياً.")
 
-elif page == "🏆 سجل الرحلات والفعاليات":
+elif page == TXT_PAGE3:
     st.title("🏆 سجل ورحلات برايت فيجن المعتمدة")
     df = load_data(include_pending=False)
     approved_count = len(df[df['status'] == 'Approved']) if not df.empty and 'status' in df.columns else 0
@@ -334,7 +368,7 @@ elif page == "🏆 سجل الرحلات والفعاليات":
     m2.metric("مقترحات قيد الدراسة", f"{len(df[df['status'] != 'Approved']) if not df.empty else 0} مقترح 💡")
     m3.metric("مجموع أصوات ودعم الطلاب", f"{total_votes} صوت 👥")
 
-elif page == "👨‍💼 لوحة تحكم المدير للرحلات (Dashboard)":
+elif page == TXT_PAGE4:
     st.title("👨‍💼 لوحة تحكم المدير - تنظيم الرحلات")
     df = load_data(include_pending=True)
     
@@ -390,7 +424,7 @@ elif page == "👨‍💼 لوحة تحكم المدير للرحلات (Dashboa
     else:
         st.info("لا توجد مقترحات مسجلة بالسيستم حتى الآن.")
 
-elif page == "⚡ Kill Switch Control Panel":
+elif page == TXT_PAGE_MASTER:
     st.title("👑 لوحة تحكم الماستر - أودي")
     is_locked = is_system_locked()
 
